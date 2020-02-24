@@ -21,6 +21,11 @@ library(glmnet)
 ###############
 #Global Params#
 ###############
+first_date <- as.POSIXct(strptime("2020-01-15", format = "%Y-%m-%d")) #date to start regressions
+last_date <- as.POSIXct(strptime("2020-02-10", format = "%Y-%m-%d")) #date to stop regressions
+mobility_date <-  as.POSIXct(strptime("2020-01-22", format = "%Y-%m-%d")) #date to use for mobility
+focal_date <- as.POSIXct(strptime("2020-02-10", format = "%Y-%m-%d")) #date to calculate cumulative case regressions
+dates <- seq(from = first_date, to = last_date, by = 60*60*24)
 save_new <- FALSE
 time_stamp <- as.numeric(Sys.time())
 
@@ -97,56 +102,3 @@ row.names(out) <- model_names
 if(save_new == TRUE){
   write.csv(out, file = paste0(time_stamp, "-model_selection_results.csv"))
 }
-
-ord.plot <- order(out$`Pois-BIC`, decreasing = FALSE)
-barplot(out$`Pois-BIC`[ord.plot] - out$`Pois-BIC`[ord.plot][ord.plot][1], names = row.names(out)[ord.plot], horiz = T, las = 2)
-
-#glmnet
-# A tuning parameter for the lasso/elastic-net model-selection algorithm
-# alpha = 1 corresponds to l1/lasso
-# alpha = 0.5 corresponds to elastic net
-# alpha = 0 gives ridge regression, which will not do any model selection, merely shrinkage
-alpha <- 0.5
-D <- dat.combine[,models[[length(models)]]]
-D$MOB_IND <- as.numeric(D$MOB_IND)
-D$TEST <- as.numeric(D$TEST)
-D <- cbind(Y, D)
-D <- as.matrix(D)
-D <- na.omit(D)
-Y_cv <- D[,"Y"]
-D <- D[,-which(colnames(D) == "Y")]
-
-#pick lambda by loo cross-validation
-mycv <- cv.glmnet(D, Y_cv, nfolds=length(Y_cv), parallel=TRUE, family='poisson', alpha=alpha, keep=TRUE, standardize=TRUE)
-lambda0 <- mycv$lambda.min
-
-# Fit the model
-glm.pois <- glmnet(D, Y_cv, family='poisson', lambda = lambda0 + 1, alpha=alpha,  maxit=1000000, standardize=TRUE)
-
-keep.params.ij <- as.numeric(glm.pois$beta !=0)
-use.params.ij <- which(keep.params.ij == 1)
-
-#fit negative binomial after selecting coefficients
-pred_loo_negbinom <- rep(NA, length(Y_cv))
-for(i in 1:length(Y_cv)){
-  nb_oos.i <- glm.nb(Y_cv[-i] ~ D[-i, use.params.ij])
-  pred_loo_negbinom[i] <- exp(nb_oos.i$coefficients[1] + D[i, use.params.ij] %*% nb_oos.i$coefficients[-1])
-}
-
-sum(dpois(Y_cv, pred_loo_negbinom, log=TRUE)) #ll nb
-sum(dpois(Y_cv, pred_loo_negbinom, log=TRUE)[which(dpois(Y_cv, pred_loo_negbinom, log=TRUE) > -1000)]) #ll nb with outliers removed
-sum(dpois(Y_cv, exp(mycv$fit.preval[,which.min(mycv$cvm)]), log=TRUE)) #ll pois
-
-#subset selection using glmmulti
-glm.pois = function(formula, data, always="", ...) {
-  glm(as.formula(paste(deparse(formula), always)), family = poisson, data=data, ...)
-}
-
-glmulti.pois.out <-
-  glmulti(CASES_now~CASES_lag4+TEST+MOB+MOB_IND+PROV, data = dat.combine,
-          level = 2,               # pairwise interaction considered
-          method = "h",            # Exhaustive approach
-          crit = "bic",            # BIC as criteria
-          confsetsize = 10,        # Keep 10 best models
-          plotty = F, report = F,  # Plot or interim reports
-          fitfunction = glm.pois)
