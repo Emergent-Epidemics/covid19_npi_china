@@ -44,8 +44,8 @@ lm_r2 <- c()
 rho <- c()
 rho_ci <- list()
 dates_reg <- c()
-for(i in dates){
-  use.full.i <- which(dat.combine$DATE == i)
+for(i in 1:length(dates)){
+  use.full.i <- which(dat.combine$DATE == dates[i])
   
   cases.full.i <- dat.combine$CASES_now[use.full.i]
   prov.full.i <- dat.combine$PROV[use.full.i]
