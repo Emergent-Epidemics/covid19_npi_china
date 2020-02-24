@@ -15,7 +15,7 @@ library(lme4)
 ######
 #Data#
 ######
-dat.combine <- readRDS("../data/1582501807.52655_full_data.RData")
+dat.combine <- readRDS("../data/1582546769.28308_full_data.RData")
 
 #######
 #Model#
@@ -62,5 +62,4 @@ ord <- order(abs(mod$residuals), decreasing = TRUE)
 dat.combine$PROV[use_mob][mt_mob][-rm_hub][ord]
 
 ord2 <- order(doubling[-rm_hub], decreasing = FALSE)
-dat.combine$PROV[use_mob][mt_mob][-rm_hub][ord2]
-doubling[-rm_hub][ord2]
+data.frame(dat.combine$PROV[use_mob][mt_mob][-rm_hub][ord2],doubling[-rm_hub][ord2])

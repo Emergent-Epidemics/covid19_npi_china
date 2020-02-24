@@ -12,7 +12,7 @@ library(googledrive)
 ###############
 #Global Params#
 ###############
-save_new <- FALSE #to save new combined data sets
+save_new <- TRUE #to save new combined data sets
 time_stamp <- as.numeric(Sys.time())
 last_date <- as.POSIXct(strptime("2020-02-18", format = "%Y-%m-%d")) #date when line list is most up-to-date
 first_date <- as.POSIXct(strptime("2019-12-01", format = "%Y-%m-%d")) #date to start recording cases
@@ -250,7 +250,7 @@ for(i in 1:length(dates)){
 
 MOB <- log(MOB)
 POPS <- log(POPS)
-dat.combine <- data.frame(DATE, CASES_CUMULATIVE, CASES_CUMULATIVE_jhu, CASES_lag6, CASES_travel_now, CASES_now, TEST, PROV, MOB, MOB_IND, POPS, CASES_lag6_hub, CASES_lag1_hub)
+dat.combine <- data.frame(DATE, CASES_CUMULATIVE, CASES_CUMULATIVE_jhu, CASES_lag4, CASES_lag7, CASES_travel_now, CASES_now, TEST, PROV, MOB, MOB_IND, POPS, CASES_lag4_hub, CASES_lag7_hub, CASES_lag1_hub)
 dat.combine$DATE <- as.POSIXct(strptime(as.character(dat.combine$DATE), format = "%Y-%m-%d"))
 
 if(save_new == TRUE){
