@@ -134,6 +134,20 @@ for(i in 1:length(Y_cv)){
   pred_loo_negbinom[i] <- exp(nb_oos.i$coefficients[1] + D[i, use.params.ij] %*% nb_oos.i$coefficients[-1])
 }
 
-sum(dpois(Y_cv, pred_loo_negbinom, log=TRUE) #ll nb
+sum(dpois(Y_cv, pred_loo_negbinom, log=TRUE)) #ll nb
 sum(dpois(Y_cv, pred_loo_negbinom, log=TRUE)[which(dpois(Y_cv, pred_loo_negbinom, log=TRUE) > -1000)]) #ll nb with outliers removed
 sum(dpois(Y_cv, exp(mycv$fit.preval[,which.min(mycv$cvm)]), log=TRUE)) #ll pois
+
+#subset selection using glmmulti
+glm.pois = function(formula, data, always="", ...) {
+  glm(as.formula(paste(deparse(formula), always)), family = poisson, data=data, ...)
+}
+
+glmulti.pois.out <-
+  glmulti(CASES_now~CASES_lag4+TEST+MOB+MOB_IND+PROV, data = dat.combine,
+          level = 2,               # pairwise interaction considered
+          method = "h",            # Exhaustive approach
+          crit = "bic",            # BIC as criteria
+          confsetsize = 10,         # Keep 10 best models
+          plotty = F, report = F,  # Plot or interim reports
+          fitfunction = glm.pois)
