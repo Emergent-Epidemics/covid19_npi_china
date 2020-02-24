@@ -63,3 +63,6 @@ dat.combine$PROV[use_mob][mt_mob][-rm_hub][ord]
 
 ord2 <- order(doubling[-rm_hub], decreasing = FALSE)
 data.frame(dat.combine$PROV[use_mob][mt_mob][-rm_hub][ord2],doubling[-rm_hub][ord2])
+
+hist(doubling, breaks = 20,  xlim = c(3, 8), col = c(rep("#b2182b", 9), "#2166ac"), main = "Province-level doubling times", xlab = "Doulbing time (days)")
+legend(5.5, 8, pch = 15, col = c("#2166ac", "#b2182b"), legend = c("Hubei Province", "Outside Hubei Province"), bty = "n")
