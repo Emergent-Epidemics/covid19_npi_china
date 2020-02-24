@@ -14,6 +14,10 @@ library(googledrive)
 ###############
 save_new <- FALSE #to save new combined data sets
 time_stamp <- as.numeric(Sys.time())
+last_date <- as.POSIXct(strptime("2020-02-18", format = "%Y-%m-%d")) #date when line list is most up-to-date
+first_date <- as.POSIXct(strptime("2019-12-01", format = "%Y-%m-%d")) #date to start recording cases
+test_start <- as.POSIXct(strptime("2020-01-19", format = "%Y-%m-%d")) #date when PCR tests were first widely available
+incubation_end <- as.POSIXct(strptime("2020-01-27", format = "%Y-%m-%d")) #this is the mean incubation period out from Jan 22nd (last day before shutdown)
 
 ######
 #Data#
@@ -69,17 +73,16 @@ if(length(rm_date_future) > 0){
   full_data$date_onset_symptoms[rm_date_future] <- NA
 }
 
-date_norm <- as.POSIXct(strptime("2020-02-23", format = "%Y-%m-%d"))
-onset_norm <- as.numeric(date_norm - full_data$date_onset_symptoms, unit = "days")
-conf_norm <- as.numeric(date_norm - full_data$date_confirmation, unit = "days")
+onset_norm <- as.numeric(last_date - full_data$date_onset_symptoms, unit = "days")
+conf_norm <- as.numeric(last_date - full_data$date_confirmation, unit = "days")
 day_mod <- lm(onset_norm ~ conf_norm)
-full_data$onset_pred <- as.Date(-predict(day_mod, full_data$date_confirmation), origin = date_norm)
+full_data$onset_pred <- as.Date(-predict(day_mod, full_data$date_confirmation), origin = last_date)
 
 dates_use <- apply(full_data[,c("onset_pred", "date_onset_symptoms", "date_admission_hospital", "date_confirmation")], 1, min, na.rm = TRUE)
 full_data$min_dat <- as.POSIXct(strptime(dates_use, format = "%Y-%m-%d"))
 
-#filtering for after dec 1st 19 and before feb 23rd 20 and only China
-use <- which(full_data$min_dat <= strptime("2020-02-23", format = "%Y-%m-%d") & full_data$min_dat > strptime("2019-12-01", format = "%Y-%m-%d") & toupper(full_data$country) == "CHINA")
+#filtering for date range and only China
+use <- which(full_data$min_dat <= last_date & full_data$min_dat > first_date & toupper(full_data$country) == "CHINA")
 data_plot <- full_data[use, ]
 
 #indicator for Hubei
@@ -99,8 +102,8 @@ line_list <- data_plot %>% group_by(min_dat, province, wuhan_travel) %>% summari
 line_list$province <- as.factor(line_list$province)
 
 #building combined data set
-dates <- seq(from = strptime("2019-12-01", format = "%Y-%m-%d"), to = strptime("2020-02-23", format = "%Y-%m-%d"), by = 60*60*24)
-prop_cols_short <- c(rep(88, 36), seq(4, 100, by = 4))
+dates <- seq(from = first_date, to = last_date, by = 60*60*24)
+prop_cols_short <- c(rep(88, 36), seq(4, 100, by = 4)) #88 is Jan. 22nd
 prop_cols <- c(prop_cols_short, rep(88, length(dates)-length(prop_cols_short)))
 
 cases <- matrix(NA, ncol = length(unique(line_list$province)), nrow = length(dates))
@@ -120,8 +123,10 @@ migration <- as.data.frame(migration)
 
 PROV <- c()
 CASES_now <- c()
-CASES_lag6 <- c()
-CASES_lag6_hub <- c()
+CASES_lag7 <- c()
+CASES_lag4 <- c()
+CASES_lag7_hub <- c()
+CASES_lag4_hub <- c()
 MOB <- c()
 TEST <- c()
 DATE <- c()
@@ -133,8 +138,6 @@ CASES_lag1_hub <- c()
 CASES_CUMULATIVE <- c()
 CASES_CUMULATIVE_jhu <- c()
 
-test_start <- as.POSIXct(strptime("2020-01-19", format = "%Y-%m-%d"))
-incubation_end <- as.POSIXct(strptime("2020-01-26", format = "%Y-%m-%d"))
 for(i in 1:length(dates)){
   names.i <- unlist(lapply(mobility_data[,prop_cols[i]-1], as.character))
   
@@ -195,9 +198,17 @@ for(i in 1:length(dates)){
     mobind.i <- rep("No", length(by_max_sum.i))
   }
   
-  if(i > 6){
-    cases.lag.i <- cases[i-6,mt.line.i]
-    cases.lag.hub.i <- rep(hubei_cases[i-6,"Hubei"], length(by_max_sum.i))
+  if(i > 4){
+    cases.lag4.i <- cases[i-4,mt.line.i]
+    cases.lag4.hub.i <- rep(hubei_cases[i-4,"Hubei"], length(by_max_sum.i))
+  }else{
+    cases.lag4.i <- rep(NA, length(by_max_sum.i))
+    cases.lag4.hub.i <- rep(NA, length(by_max_sum.i))
+  }
+  
+  if(i > 7){
+    cases.lag.i <- cases[i-7,mt.line.i]
+    cases.lag.hub.i <- rep(hubei_cases[i-7,"Hubei"], length(by_max_sum.i))
   }else{
     cases.lag.i <- rep(NA, length(by_max_sum.i))
     cases.lag.hub.i <- rep(NA, length(by_max_sum.i))
@@ -225,13 +236,15 @@ for(i in 1:length(dates)){
   PROV <- c(PROV, names(by_max_sum.i))
   CASES_travel_now <- c(CASES_travel_now, as.numeric(by_max_travel.i))
   CASES_now <- c(CASES_now, as.numeric(by_max_sum.i))
-  CASES_lag6 <- c(CASES_lag6, as.numeric(cases.lag.i))
+  CASES_lag4 <- c(CASES_lag4, as.numeric(cases.lag4.i))
+  CASES_lag7 <- c(CASES_lag7, as.numeric(cases.lag.i))
   MOB <- c(MOB,mob_sum.i)
   MOB_IND <- c(MOB_IND, mobind.i)
   TEST <- c(TEST, test.i)
   DATE <- c(DATE, rep(as.character(dates[i]), length(by_max_sum.i)))
   POPS <- c(POPS, pops.i)
-  CASES_lag6_hub <- c(CASES_lag6_hub, cases.lag.hub.i)
+  CASES_lag4_hub <- c(CASES_lag4_hub, cases.lag.hub.i)
+  CASES_lag7_hub <- c(CASES_lag7_hub, cases.lag.hub.i)
   CASES_lag1_hub <- c(CASES_lag1_hub, cases.lag.hub.1.i)
 }
 

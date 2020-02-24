@@ -46,5 +46,21 @@ for(i in provinces){
 }
 
 mod <- lmer(log(cases_reg+1) ~ time_reg + (time_reg|prov_reg))
-hist(log(2)/(ranef(mod)$prov_reg$time_reg+fixef(mod)["time_reg"]))
-summary(log(2)/(ranef(mod)$prov_reg$time_reg+fixef(mod)["time_reg"]))
+doubling <- log(2)/(ranef(mod)$prov_reg$time_reg+fixef(mod)["time_reg"])
+hist(doubling)
+summary(doubling)
+
+use_mob <- which(dat.combine$DATE == as.POSIXct(strptime("2020-01-22", format = "%Y-%m-%d")))
+mt_mob <- match(row.names(ranef(mod)$prov_reg), dat.combine$PROV[use_mob])
+rm_hub <- which(row.names(ranef(mod)$prov_reg) == "Hubei")
+mod <- lm(doubling[-rm_hub] ~ dat.combine$MOB[use_mob][mt_mob][-rm_hub])
+plot(dat.combine$MOB[use_mob][mt_mob][-rm_hub], doubling[-rm_hub], pch = 16, bty = "n", ylab = "Doulbing time (days)", xlab = "Mobility from Wuhan (log)", main = "Mobility from Wuhan predicts province-level doubling")
+abline(mod, lty = 3, col = "red", lwd = 3)
+summary(mod)
+
+ord <- order(abs(mod$residuals), decreasing = TRUE)
+dat.combine$PROV[use_mob][mt_mob][-rm_hub][ord]
+
+ord2 <- order(doubling[-rm_hub], decreasing = FALSE)
+dat.combine$PROV[use_mob][mt_mob][-rm_hub][ord2]
+doubling[-rm_hub][ord2]
