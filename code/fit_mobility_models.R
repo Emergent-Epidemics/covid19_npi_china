@@ -16,15 +16,18 @@ library(leaps)
 library(MASS)
 library(pscl)
 library(dynlm)
+library(zoo)
 
 ###############
 #Global Params#
 ###############
-first_date <- as.POSIXct(strptime("2020-01-15", format = "%Y-%m-%d")) #date to start regressions
-last_date <- as.POSIXct(strptime("2020-02-10", format = "%Y-%m-%d")) #date to stop regressions
+first_date <- as.POSIXct(strptime("2020-01-03", format = "%Y-%m-%d")) #date to start regressions
+last_date <- as.POSIXct(strptime("2020-02-04", format = "%Y-%m-%d")) #date to stop regressions
 mobility_date <-  as.POSIXct(strptime("2020-01-22", format = "%Y-%m-%d")) #date to use for mobility
 focal_date <- as.POSIXct(strptime("2020-02-10", format = "%Y-%m-%d")) #date to calculate cumulative case regressions
 dates <- seq(from = first_date, to = last_date, by = 60*60*24)
+time_stamp <- as.numeric(Sys.time())
+save_new <- FALSE
 
 ######
 #Data#
@@ -44,8 +47,8 @@ lm_r2 <- c()
 rho <- c()
 rho_ci <- list()
 dates_reg <- c()
-for(i in dates){
-  use.full.i <- which(dat.combine$DATE == i)
+for(i in 1:length(dates)){
+  use.full.i <- which(dat.combine$DATE == dates[i])
   
   cases.full.i <- dat.combine$CASES_now[use.full.i]
   prov.full.i <- dat.combine$PROV[use.full.i]
@@ -101,4 +104,15 @@ for(i in dates){
   rho <- c(rho, rho.est.i)
   rho_ci[[i]] <- rho.ci.i
   dates_reg <- c(dates_reg, as.character(dates[i]))
+}
+
+rm_neg <- which(nb_r2 < 0)
+nb_r2[rm_neg] <- NA
+roll_mean_nb_r2 <- rollapply(nb_r2, width = 5, by = 1, FUN = mean, na.rm = TRUE, align = "left")
+plot(dates[-c(1:4)], roll_mean_nb_r2, type = "l")
+
+out <- data.frame(dates[-c(1:4)], roll_mean_nb_r2)
+colnames(out) <- c("date", "r2")
+if(save_new == TRUE){
+  write.csv(out, file = paste0(time_stamp, "roll_mean_nb_r2.csv"), row.names = FALSE, quote = FALSE)
 }

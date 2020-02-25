@@ -54,5 +54,6 @@ for(i in 1:length(dates)){
   intercepts2[[i]] <- coefficients(mod2.i)
 }
 
-boxplot(lapply(intercepts2, function(x) exp(x/2)), names = format(dates, "%d-%b"), las = 2, col = "gray", range = 0, ylab = "Province-level relative growth rates (log scale)", bty = "n")
-abline(h = 0, lty = 3, lwd = 2, col = "red")
+boxplot(lapply(intercepts2, function(x) log(exp(x))), names = format(dates, "%d-%b"), las = 2, col = "gray", range = 0, ylab = "Province-level relative growth rates (log scale)", bty = "n")
+abline(h = log(2), lty = 3, lwd = 2, col = "red")
+
