@@ -77,7 +77,7 @@ def main():
 
     Fig 2 (a): Snapshots of log-log regression between the cumulative cases
                and the percentage of travels from Wuhan 6 days before.
-    Fig 2 (b): Time series of goodness of fit for the log-log regression.
+    Fig 2 (b): Time series of goodness of fit for a negative binomial model.
 
     """
     # Fig 1: Human mobility from Wuhan
@@ -172,7 +172,13 @@ def main():
     # Adjust spaces between subplots
     plt.subplots_adjust(wspace=0.15, hspace=0.3)
 
-    # Fig 2: Correlation analysis between mobility and cases data
+    # Fig 2: Correlation analysis (negative binomial model) between mobility
+    # and cases data
+    # Setup figure
+    fig = plt.figure(figsize=(10, 4.5))
+    gs = fig.add_gridspec(nrows=2, ncols=4, height_ratios=[1, 1.25])
+
+    # Panel (a)
     # Load data
     data = pd.read_csv('../data/human_mobility_from_wuhan.csv')
     mobility = data.loc[data['date'].isin(DATE_RANGE_MOBILITY), :]
@@ -194,24 +200,17 @@ def main():
     mobility_modified.loc[:, 'date'] = (dates_mobility + LAG).map(lambda d: d.strftime('%Y-%m-%d'))
     data = cases.merge(mobility_modified, on=['date', 'province'], how='left')
 
-    # Correlation analysis between the logarithm of cumulative cases and the
-    # logarithm of percentage of travels from Wuhan to the provinces
-    correlation, regline = dict(), dict()
-    for date in DATE_RANGE_CASES:
+    for i, date in enumerate(DATE_ZOOM_CASES):
+        # Correlation analysis between the logarithm of cumulative cases and
+        # the logarithm of percentage of travels from Wuhan to the provinces
         subset = data.loc[data['date'] == date, :].dropna()
         s, y_0, rval, _, _ = linregress(np.log(subset['percentage']),
                                         np.log(subset['cases']))
-        correlation[date] = rval ** 2
+        correlation = rval ** 2
         p_min = np.log(subset['percentage']).min()
         p_max = np.log(subset['percentage']).max()
-        regline[date] = ([p_min, p_max], [y_0 + s * p_min, y_0 + s * p_max])
+        regline = ([p_min, p_max], [y_0 + s * p_min, y_0 + s * p_max])
 
-    # Setup figure
-    fig = plt.figure(figsize=(10, 4.5))
-    gs = fig.add_gridspec(nrows=2, ncols=4, height_ratios=[1, 1.25])
-
-    # Panel (a)
-    for i, date in enumerate(DATE_ZOOM_CASES):
         # Plot the scatter plot of log-cases and log-percentage
         ax = fig.add_subplot(gs[0, i])
         dat = data.loc[data['date'] == date, :].dropna()
@@ -219,7 +218,7 @@ def main():
                    c='white', s=10, edgecolor='#333333', linewidth=1.05)
 
         # Add the regression line
-        ax.plot(*regline[date], label=r'$R^2 = %.2f$' % correlation[date],
+        ax.plot(*regline, label=r'$R^2 = %.2f$' % correlation,
                 linewidth=1.35, color='#f66136', linestyle=':', zorder=0)
         ax.legend(loc=2, fontsize=7, framealpha=0)
 
@@ -233,9 +232,12 @@ def main():
         ax.tick_params(axis='both', which='major', labelsize=7)
 
     # Panel (b)
+    # Load data
+    data = pd.read_csv('../data/roll_mean_nb_r2.csv', index_col='date')
+
     # Plot the time series of correlation in the analysis
     ax = fig.add_subplot(gs[1, :])
-    ax.plot(DATE_RANGE_CASES, [correlation[date] for date in DATE_RANGE_CASES],
+    ax.plot(DATE_RANGE_CASES, data.loc[DATE_RANGE_CASES, 'r2'].values,
             linewidth=2, color='#f66136', marker='o', markersize=6,
             markeredgecolor='#333333', markeredgewidth=1.5)
 
@@ -251,7 +253,7 @@ def main():
                 minor=DATE_BASE_CASES)
     ax.set_xlabel('')
     ax.set_ylabel(r'$R^2$ values', fontsize=8, x=-0.1)
-    ax.set_ylim(min(correlation.values()) - 0.05, 1.05)
+    ax.set_ylim(data['r2'].min() - 0.05, 1.05)
     ax.tick_params(axis='x', which='major', labelsize=8)
     ax.tick_params(axis='y', which='major', labelsize=7)
     ax.spines['top'].set_visible(False)
