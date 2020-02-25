@@ -29,7 +29,7 @@ r2_plot_date <- as.POSIXct(strptime("2020-01-31", format = "%Y-%m-%d")) #date to
 
 dates <- seq(from = first_date, to = last_date, by = 60*60*24)
 time_stamp <- as.numeric(Sys.time())
-save_new <- TRUE
+save_new <- FALSE
 
 ######
 #Data#
@@ -70,7 +70,10 @@ for(i in 1:length(dates)){
   
   if(save_new == "TRUE" & dates[i] == r2_plot_date & is(lm.i)[1] != "try-error"){
     pdf(paste0(as.character(r2_plot_date), "r2_plot.pdf"))
-    plot(data.i$mob, log(data.i$cumulative+1), pch = 16, bty = "n", xlab = "Mobility from Wuhan (log scale)", ylab = "Cumulative cases (log scale)", main = paste0(as.character(r2_plot_date), " R2 = ", round(summary(lm.i)$adj.r.squared, 2)))
+    plot(data.i$mob, log(data.i$cumulative+1), pch = 16, bty = "n", xlab = "Mobility from Wuhan (log scale)", ylab = "Cumulative cases (log scale)", main = paste0(as.character(r2_plot_date), " R2 = ", round(summary(lm.i)$adj.r.squared, 2)), ylim = c(2, 7), yaxt = "n")
+    at.y <- 2:7
+    lab.y <- round(exp(at.y), 0)
+    axis(2, at.y, lab.y)
     abline(lm.i, col = "red", lty = 3, lwd = 3)
     dev.off()
   }
