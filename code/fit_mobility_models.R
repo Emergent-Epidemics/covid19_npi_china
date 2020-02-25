@@ -21,18 +21,22 @@ library(zoo)
 ###############
 #Global Params#
 ###############
-first_date <- as.POSIXct(strptime("2020-01-03", format = "%Y-%m-%d")) #date to start regressions
+first_date <- as.POSIXct(strptime("2020-01-05", format = "%Y-%m-%d")) #date to start regressions
 last_date <- as.POSIXct(strptime("2020-02-04", format = "%Y-%m-%d")) #date to stop regressions
 mobility_date <-  as.POSIXct(strptime("2020-01-22", format = "%Y-%m-%d")) #date to use for mobility
 focal_date <- as.POSIXct(strptime("2020-02-10", format = "%Y-%m-%d")) #date to calculate cumulative case regressions
+r2_plot_date <- as.POSIXct(strptime("2020-01-31", format = "%Y-%m-%d")) #date to calculate cumulative case regressions
+
 dates <- seq(from = first_date, to = last_date, by = 60*60*24)
 time_stamp <- as.numeric(Sys.time())
-save_new <- FALSE
+save_new <- TRUE
 
 ######
 #Data#
 ######
 dat.combine <- readRDS("../data/1582546769.28308_full_data.RData")
+rm_hub <- which(dat.combine$PROV == "Hubei")
+dat.combine <- dat.combine[-rm_hub,]
 
 #######
 #Model#
@@ -64,6 +68,12 @@ for(i in 1:length(dates)){
   glm.nb.i <- try(glm.nb(cases~mob, data = data.i), silent = TRUE)
   lm.i <- try(lm(log(cumulative+1)~mob, data = data.i), silent = TRUE)
   
+  if(save_new == "TRUE" & dates[i] == r2_plot_date & is(lm.i)[1] != "try-error"){
+    pdf(paste0(as.character(r2_plot_date), "r2_plot.pdf"))
+    plot(data.i$mob, log(data.i$cumulative+1), pch = 16, bty = "n", xlab = "Mobility from Wuhan (log scale)", ylab = "Cumulative cases (log scale)", main = paste0(as.character(r2_plot_date), " R2 = ", round(summary(lm.i)$adj.r.squared, 2)))
+    abline(lm.i, col = "red", lty = 3, lwd = 3)
+    dev.off()
+  }
   ord.case.i <- order(data.i$cumulative, decreasing = TRUE)
   ord.mob.i <- order(data.i$mob, decreasing = TRUE)
   rho.i <- try(cor.test(ord.case.i, ord.mob.i, method = "spearman"))
@@ -108,10 +118,10 @@ for(i in 1:length(dates)){
 
 rm_neg <- which(nb_r2 < 0)
 nb_r2[rm_neg] <- NA
-roll_mean_nb_r2 <- rollapply(nb_r2, width = 5, by = 1, FUN = mean, na.rm = TRUE, align = "left")
-plot(dates[-c(1:4)], roll_mean_nb_r2, type = "l")
+roll_mean_nb_r2 <- rollapply(nb_r2, width = 3, by = 1, FUN = mean, na.rm = TRUE, align = "left")
+plot(dates[-c(1:2)], roll_mean_nb_r2, type = "l")
 
-out <- data.frame(dates[-c(1:4)], roll_mean_nb_r2)
+out <- data.frame(dates[-c(1:2)], roll_mean_nb_r2)
 colnames(out) <- c("date", "r2")
 if(save_new == TRUE){
   write.csv(out, file = paste0(time_stamp, "roll_mean_nb_r2.csv"), row.names = FALSE, quote = FALSE)
