@@ -6,6 +6,7 @@
 #libraries#
 ###########
 library(ggplot2)
+library(wesanderson)
 
 ###############
 #Global Params#
@@ -40,4 +41,7 @@ ggplot(dat.plot, aes(DATE, log(CASES_now + 1), fill = PROV)) + geom_bar(stat = "
 rm_hub <- which(dat.combine$PROV == "Hubei" | dat.combine$DATE < date_cut)
 dat.combine.no.hub <- dat.combine[-rm_hub,]
 quartz(width = 10, height = 6)
-ggplot(dat.combine.no.hub, aes(DATE, CASES_now)) + geom_bar(stat = "identity") + geom_vline(xintercept = as.POSIXct(strptime("2020-01-23", format = "%Y-%m-%d")), linetype="dashed", color = "#e34a33", size = 1) + geom_vline(xintercept = as.POSIXct(strptime("2020-02-06", format = "%Y-%m-%d")), linetype="dashed", color = "#e34a33", size = 1)+ ylab("Daily COVID-19 cases") + xlab("2020") + theme(legend.position = c(0.1,0.7), legend.key = element_rect(fill = "#f0f0f0"), legend.background = element_rect(fill = "#ffffffaa", colour = "black"), panel.background = element_rect(fill = "white", colour = "black"), axis.text.y = element_text(colour = "black", size = 14), axis.text.x = element_text(colour = "black", size = 10), axis.title = element_text(colour = "black", size = 16), panel.grid.minor = element_line(colour = "#00000000",linetype = 3), panel.grid.major = element_line(colour = "#00000000", linetype = 3)) + scale_y_continuous(expand = c(0.01,0.01)) + labs(fill = "Province")
+ggplot(dat.combine.no.hub, aes(DATE, CASES_now)) + geom_bar(stat = "identity") + geom_vline(xintercept = as.POSIXct(strptime("2020-01-23", format = "%Y-%m-%d")), linetype="dashed", color = "#e34a33", size = 1) + ylab("Daily COVID-19 cases") + xlab("2020") + theme(legend.position = c(0.1,0.7), legend.key = element_rect(fill = "#f0f0f0"), legend.background = element_rect(fill = "#ffffffaa", colour = "black"), panel.background = element_rect(fill = "white", colour = "black"), axis.text.y = element_text(colour = "black", size = 14), axis.text.x = element_text(colour = "black", size = 10), axis.title = element_text(colour = "black", size = 16), panel.grid.minor = element_line(colour = "#00000000",linetype = 3), panel.grid.major = element_line(colour = "#00000000", linetype = 3)) + scale_y_continuous(expand = c(0.01,0.01)) + labs(fill = "Province") + annotate(geom="text", x=as.POSIXct(strptime("2020-01-26", format = "%Y-%m-%d"))+10000, y=1150, label="Wuhan cordon", color="#e34a33")
+
+quartz(width = 10, height = 6)
+ggplot(dat.combine, aes(DATE, CASES_now)) + geom_bar(stat = "identity") + geom_vline(xintercept = as.POSIXct(strptime("2020-01-23", format = "%Y-%m-%d")), linetype="dashed", color = "#e34a33", size = 1) + ylab("Daily COVID-19 cases") + xlab("2020") + theme(legend.position = c(0.1,0.7), legend.key = element_rect(fill = "#f0f0f0"), legend.background = element_rect(fill = "#ffffffaa", colour = "black"), panel.background = element_rect(fill = "white", colour = "black"), axis.text.y = element_text(colour = "black", size = 14), axis.text.x = element_text(colour = "black", size = 10), axis.title = element_text(colour = "black", size = 16), panel.grid.minor = element_line(colour = "#00000000",linetype = 3), panel.grid.major = element_line(colour = "#00000000", linetype = 3)) + scale_y_continuous(expand = c(0.01,0.01)) + labs(fill = "Province") + annotate(geom="text", x=as.POSIXct(strptime("2020-01-26", format = "%Y-%m-%d"))+10000, y=1150, label="Wuhan cordon", color="#e34a33")
