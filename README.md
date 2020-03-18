@@ -1,7 +1,7 @@
-## Code and data for: The effect of cordon sanitaire on the COVID-19 epidemic in China
+## Code and data for: The effect of human mobility and control measures on the COVID-19 epidemic in China
 
 ### Citation
-The effect of cordon sanitaire on the COVID-19 epidemic in China
+The effect of human mobility and control measures on the COVID-19 epidemic in China
 
 Moritz U.G. Kraemer, Chia-Hung Yang, Bernardo Gutierrez, Chieh-Hsi Wu , Brennan Klein, David Pigott, open COVID-19 data working group*, Louis du Plessis, Nuno R. Faria, Ruoran Li, Bill Hanage, John S. Brownstein, Maylis Layan, Alessandro Vespignani, Huaiyu Tian, Christopher Dye, Oliver G. Pybus, and Samuel V. Scarpino.
 
