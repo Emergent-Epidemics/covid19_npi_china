@@ -3,13 +3,17 @@
 ### Citation
 The effect of cordon sanitaire on the COVID-19 epidemic in China
 
-Moritz U.G. Kraemer1,2,3,$, Chia-Hung Yang4, Bernardo Gutierrez1, Chieh-Hsi Wu5 , Brennan Klein4, David Pigott6, open COVID-19 data working group*, Louis du Plessis1, Nuno R. Faria1, Ruoran Li7, Bill Hanage7, John S. Brownstein2,3, Maylis Layan8, Alessandro Vespignani4, Huaiyu Tian9, Christopher Dye1, Simon Cauchemez6, Oliver G. Pybus1,$, Samuel V. Scarpino4,$
+Moritz U.G. Kraemer, Chia-Hung Yang, Bernardo Gutierrez, Chieh-Hsi Wu , Brennan Klein, David Pigott, open COVID-19 data working group*, Louis du Plessis, Nuno R. Faria, Ruoran Li, Bill Hanage, John S. Brownstein, Maylis Layan, Alessandro Vespignani, Huaiyu Tian, Christopher Dye, Oliver G. Pybus, and Samuel V. Scarpino.
+
+doi: https://doi.org/10.1101/2020.03.02.20026708
 
 ### Acknowledgements
-We want to thank all the individuals and organizations across the world who have been willing and able to report data in as open and timely manner as possible. To see individuals involved in the often painstaking data curation process, please see [beoutbreakprepared/nCoV2019](https://github.com/beoutbreakprepared/nCoV2019).
+We want to thank all the individuals and organizations across the world who have been willing and able to report data in as open and timely manner as possible. To see individuals involved in the often painstaking data curation process, please see [beoutbreakprepared/nCoV2019](https://github.com/beoutbreakprepared/nCoV2019) and our correspondence in The Lancet Infectious Diseases, ["Open access epidemiological data from the COVID-19 outbreak"](https://www.thelancet.com/journals/laninf/article/PIIS1473-3099(20)30119-5/fulltext).
+
+*For a complete list of the COVID-19 data working group see [Specific Contributors](https://github.com/beoutbreakprepared/nCoV2019).
 
 ### Abstract
-The ongoing COVID-19 outbreak has rapidly expanded throughout China. Major behavioral, clinical, and state interventions are currently underway to mitigate the epidemic and prevent the persistence of the virus in human populations in China and globally. It remains unclear how these unprecedented interventions, including travel restrictions, have affected COVID-19 spread in China. We use real-time mobility data from Wuhan and detailed case data including travel history to elucidate the role of case importation on transmission in cities across China. Shifts in reported cases from predominantly male to a more equal sex ratio are indicative of local chains of transmission outside Wuhan around the time the cordon sanitaire was implemented. Further, human mobility data from Wuhan explain the variation in epidemic size across provinces in China which has declined since the implementation of the cordon sanitaire. In light of these findings, local containment of COVID-19 seems possible when appropriate measures are taken to limit community transmission.
+The ongoing COVID-19 outbreak has expanded rapidly throughout China. Major behavioral, clinical, and state interventions are underway currently to mitigate the epidemic and prevent the persistence of the virus in human populations in China and worldwide. It remains unclear how these unprecedented interventions, including travel restrictions, have affected COVID-19 spread in China. We use real-time mobility data from Wuhan and detailed case data including travel history to elucidate the role of case importation on transmission in cities across China and ascertain the impact of control measures. Early on, the spatial distribution of COVID-19 cases in China was well explained by human mobility data. Following the implementation of control measures, this correlation dropped and growth rates became negative in most locations, although shifts in the demographics of reported cases are still indicative of local chains of transmission outside Wuhan. This study shows that the drastic control measures implemented in China have substantially mitigated the spread of COVID-19.
 
 ### Notes on the code
 To run, you need to create a folder called "secrets" in the directory "code" and add to that folder:
