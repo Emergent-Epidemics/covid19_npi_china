@@ -7,7 +7,7 @@ Moritz U.G. Kraemer, Chia-Hung Yang, Bernardo Gutierrez, Chieh-Hsi Wu , Brennan 
 
 doi: https://doi.org/10.1101/2020.03.02.20026708
 
-manuscript version of the code and data can be accessed via the following  [![DOI](https://zenodo.org/badge/241727236.svg)](https://zenodo.org/badge/latestdoi/241727236).
+manuscript version of the code and data can be accessed via Zenodo:  [![DOI](https://zenodo.org/badge/241727236.svg)](https://zenodo.org/badge/latestdoi/241727236).
 
 ### Acknowledgements
 We want to thank all the individuals and organizations across the world who have been willing and able to report data in as open and timely manner as possible. To see individuals involved in the often painstaking data curation process, please see [beoutbreakprepared/nCoV2019](https://github.com/beoutbreakprepared/nCoV2019) and our correspondence in The Lancet Infectious Diseases, ["Open access epidemiological data from the COVID-19 outbreak"](https://www.thelancet.com/journals/laninf/article/PIIS1473-3099(20)30119-5/fulltext).
