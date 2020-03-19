@@ -1,4 +1,4 @@
-## Code and data for: The effect of human mobility and control measures on the COVID-19 epidemic in China
+## Code for: The effect of human mobility and control measures on the COVID-19 epidemic in China
 
 ### Citation
 The effect of human mobility and control measures on the COVID-19 epidemic in China
