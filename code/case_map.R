@@ -84,6 +84,6 @@ ggplot() +
   geom_point(data = travel_case_data, aes(x = longitude, y = latitude, color = days_before_quarantine_bin))+
   geom_segment(aes(x = rep(114.1717, nrow(travel_case_data)), y = rep(30.3515, nrow(travel_case_data)), xend = travel_case_data$longitude, yend = travel_case_data$latitude, color = travel_case_data$days_before_quarantine_bin)) + geom_polygon(data = china_bound_df, aes(x = long, y = lat), color = "white", fill = "white") + geom_polygon(data = china_bound_df, aes(x = long, y = lat), color = "#000000", lty = 3, fill = "white") + 
   theme(aspect.ratio=1)+
-  scale_color_brewer(palette="Dark2", name = "Travelers with symptoms before Wuhan quarantine", labels = c("0-1 days", "2 days", "3 days", "4 days", "5 days", " 6 days", "1 week", "2 weeks", "3+ weeks"))+
+  scale_color_brewer(palette="Dark2", name = "Travelers with symptoms before Wuhan quarantine", labels = c("0-1 days", "2 days", "3 days", "4 days", "5 days", " 6 days", "1 week", "2 weeks", "3+ weeks"))+ theme(legend.position = "none")+
   theme_opts
 
